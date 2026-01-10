@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { CohereClient } from "cohere-ai";
+import { CohereClientV2 } from "cohere-ai";
 
 //Helper function to send a simple message
 async function sendMessage(chatId: number, text: string) {
@@ -31,23 +31,31 @@ async function generateCohereResponse(prompt: string): Promise<string> {
       throw new Error("COHERE_API_KEY is not set in environment variables");
     }
 
-    // Initialize Cohere client with API key (do this inside the function to ensure env var is loaded)
-    const cohere = new CohereClient({
+    // Initialize Cohere V2 client with API key (V2 is the recommended API)
+    const cohere = new CohereClientV2({
       token: process.env.COHERE_API_KEY,
     });
 
-    // Use chat method to get response from Cohere (non-streaming)
-    // Try command-r-plus first, fallback to command if needed
+    // Use V2 chat API with messages array format
     const response = await cohere.chat({
-      message: prompt,
-      model: "command-r-plus", // You can also try: "command", "command-light", "command-nightly", or "command-r"
+      model: "command-r-plus", // You can also try: "command", "command-a-03-2025", "command-r"
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
     });
 
-    // Extract text from response - HttpResponsePromise should unwrap to NonStreamedChatResponse
-    if (response && typeof response === "object" && "text" in response) {
-      const text = response.text;
-      if (typeof text === "string" && text.trim()) {
-        return text.trim();
+    // Extract text from V2 response structure: response.message.content[].text
+    if (response?.message?.content && Array.isArray(response.message.content)) {
+      // Extract text from all content items with type "text"
+      const textParts = response.message.content
+        .filter((item: any) => item.type === "text" && item.text)
+        .map((item: any) => item.text);
+      
+      if (textParts.length > 0) {
+        return textParts.join(" ").trim();
       }
     }
 

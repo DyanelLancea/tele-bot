@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (text) {
       if (text === "/start") {
         // Send welcome message
-        await sendMessage(chatId, "Welcome! I'm Edmund RAG Bot.");
+        await sendMessage(chatId, "Welcome! I'm Lancea's Bot.");
       } else {
         // "text" is the initial message by the user, that we want to feed to LLM
         // "dynamicMessage" is the response from the LLM, that we want to send back to the user

@@ -45,6 +45,13 @@ export async function POST(request: NextRequest) {
       if (text === "/start") {
         // Send welcome message
         await sendMessage(chatId, "Welcome! I'm Lancea's Bot.");
+      } else if (text.toLowerCase().trim() === "who is her boyfriend?") {
+        // Handle specific question about Lancea's boyfriend
+        await sendMessage(
+          chatId,
+          "Lancea's boyfriend is Darius! They have been in a loving relationship since 2023, " +
+          "he regularly gifts her flowers and she always comes down to support him and his Hockey matches!"
+        );
       } else {
         // "text" is the initial message by the user, that we want to feed to LLM
         // "dynamicMessage" is the response from the LLM, that we want to send back to the user
